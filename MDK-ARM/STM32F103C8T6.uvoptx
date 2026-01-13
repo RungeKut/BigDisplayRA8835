@@ -234,7 +234,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\RA8835\graphic.c</PathWithFileName>
+      <PathWithFileName>..\RA8835\graphic.c</PathWithFileName>
       <FilenameWithoutPath>graphic.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -246,7 +246,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\RA8835\sed1335.c</PathWithFileName>
+      <PathWithFileName>..\RA8835\sed1335.c</PathWithFileName>
       <FilenameWithoutPath>sed1335.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -258,7 +258,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\RA8835\SED1335-STM32.c</PathWithFileName>
+      <PathWithFileName>..\RA8835\SED1335-STM32.c</PathWithFileName>
       <FilenameWithoutPath>SED1335-STM32.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>

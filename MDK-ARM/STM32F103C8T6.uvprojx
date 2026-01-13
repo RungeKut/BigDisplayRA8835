@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xB</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc; ../Drivers/STM32F1xx_HAL_Driver/Inc; ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy; ../Drivers/CMSIS/Device/ST/STM32F1xx/Include; ../Drivers/CMSIS/Include; ..\..\RA8835</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;..\RA8835</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -396,17 +396,17 @@
             <File>
               <FileName>graphic.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\RA8835\graphic.c</FilePath>
+              <FilePath>..\RA8835\graphic.c</FilePath>
             </File>
             <File>
               <FileName>sed1335.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\RA8835\sed1335.c</FilePath>
+              <FilePath>..\RA8835\sed1335.c</FilePath>
             </File>
             <File>
               <FileName>SED1335-STM32.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\RA8835\SED1335-STM32.c</FilePath>
+              <FilePath>..\RA8835\SED1335-STM32.c</FilePath>
             </File>
             <File>
               <FileName>main.c</FileName>
