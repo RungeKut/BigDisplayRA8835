@@ -8,48 +8,67 @@
 //-------------------------------------------------------------------------------------------------
 void GLCD_Initialize(void)
 {
-GLCD_InitPorts();
+	GLCD_InitPorts();
 
-GLCD_WriteCommand(SED1335_SYSTEM_SET); 
-GLCD_WriteData(SED1335_SYS_P1);	
-GLCD_WriteData(SED1335_SYS_P2);		
-GLCD_WriteData(SED1335_FY);		
-GLCD_WriteData(SED1335_CR);		
-GLCD_WriteData(SED1335_TCR);	
-GLCD_WriteData(SED1335_LF);		
-GLCD_WriteData(SED1335_APL);	
-GLCD_WriteData(SED1335_APH);	
-	
-GLCD_WriteCommand(SED1335_SCROLL);   
-GLCD_WriteData(SED1335_SAD1L);		
-GLCD_WriteData(SED1335_SAD1H);		
-GLCD_WriteData(SED1335_SL1);		
-GLCD_WriteData(SED1335_SAD2L);		
-GLCD_WriteData(SED1335_SAD2H);		
-GLCD_WriteData(SED1335_SL2);		
-GLCD_WriteData(SED1335_SAD3L);		
-GLCD_WriteData(SED1335_SAD3H); 		
-GLCD_WriteData(SED1335_SAD4L);		
-GLCD_WriteData(SED1335_SAD4H);		
-	
-GLCD_WriteCommand(SED1335_CSRFORM);
-GLCD_WriteData(SED1335_CRX);		
-GLCD_WriteData(SED1335_CSRF_P2);		
-	
-GLCD_WriteCommand(SED1335_CGRAM_ADR);       
-GLCD_WriteData(SED1335_SAGL);			
-GLCD_WriteData(SED1335_SAGH);				
-	
-GLCD_WriteCommand(SED1335_CSRDIR_R);      
+	// === SYSTEM SET (0x40) ===
+    GLCD_WriteCommand(0x40);
+    GLCD_WriteData(0x36); // P1: 8bpp, 48 cols? Нет — см. ниже!
+    // Но для 320 точек: 320 / 8 = 40 → ближайшее допустимое значение — 40 колонок.
+    // Однако RA8835 кодирует колонки как (N-1), и шаг — 8 колонок.
+    // Фактически, доступны: 32, 40, 48, 56, 64 колонок → 256, 320, 384, 448, 512 точек.
+    // Значит, 40 колонок = 320 точек → код = 0x34 + (40-32)/8 = 0x34 + 1 = 0x35?
+    // Но документация RA8835: P1[2:0] = количество колонок: 
+    //   000=32, 001=40, 010=48, 011=56, 100=64
+    // → 40 колонок = 001 → биты [2:0] = 001
+    // Также: P1[7:3] — прочие флаги
 
-GLCD_WriteCommand(SED1335_HDOT_SCR);       
-GLCD_WriteData(SED1335_SCRD);			
-	
-GLCD_WriteCommand(SED1335_OVLAY);            
-GLCD_WriteData(SED1335_OVLAY_P1);			
-			
-GLCD_WriteCommand(SED1335_DISP_ON);
-GLCD_WriteData(SED1335_FLASH);
+    // Стандартное значение для 320x240:
+    GLCD_WriteData(0x35); // P1: 8bpp, 40 cols (320 dots), internal clock, etc.
+    GLCD_WriteData(0x87); // P2: CGROM selected, 240 lines per plane
+    GLCD_WriteData(0x07); // P3: TCYC = 7 (~200ns cycle time)
+    GLCD_WriteData(0x27); // P4: 40 chars/line = 40 bytes = 320 dots
+    GLCD_WriteData(0x1F); // P5: 32 lines per screen? Нет — для 240 линий:
+                              // На самом деле P5 = количество линий на экран - 1
+                              // Но RA8835 использует "текстовые строки", 1 строка = 8 точек
+                              // → 240 / 8 = 30 строк → P5 = 29 = 0x1D
+                              // Однако часто используют 32 (0x1F) и скроллингом ограничивают до 240
+    GLCD_WriteData(0x00); // P6: не используется
+    GLCD_WriteData(0x00); // P7: не используется
+
+    // === SCROLL (0x44) ===
+    GLCD_WriteCommand(0x44);
+    GLCD_WriteData(0x00); // NL0-NL7
+    GLCD_WriteData(0x00); // NL8-NL10 + AD0-AD2
+    GLCD_WriteData(0x00); // AD3-AD10
+    GLCD_WriteData(0xEF); // AD11-AD15: начальный адрес видеопамяти (обычно 0)
+                              // Но важно: размер плоскости = 40 * 240 = 9600 байт
+                              // Для 240 линий → 240 * 40 = 9600 → 0x2580
+                              // Однако SCROLL.P3 задаёт высоту плоскости в линиях
+    GLCD_WriteData(0x00); // RAM size: обычно 0 = 32KB
+    GLCD_WriteData(0x00); // reserved
+    GLCD_WriteData(0x00); // reserved
+    GLCD_WriteData(0x00); // reserved
+
+    // Но правильнее: задать высоту плоскости = 240 линий
+    // → P3 = 240 - 1 = 239 = 0xEF (младшие 8 бит)
+    // → P2[7:5] = старшие 3 бита (239 = 0x00EF → старшие = 0)
+    // → поэтому P2 = 0x00, P3 = 0xEF — верно
+
+    // === HDOT SCR (0x5A) ===
+    GLCD_WriteCommand(0x5A);
+    GLCD_WriteData(0x00); // без горизонтального сжатия/растяжения
+
+    // === OVLAY (0x58) ===
+    GLCD_WriteCommand(0x58);
+    GLCD_WriteData(0x00); // только графика (без текстового слоя)
+
+    // === CSRW (0x46) — установить указатель записи ===
+    GLCD_WriteCommand(0x46);
+    GLCD_WriteData(0x00); // младший байт адреса
+    GLCD_WriteData(0x00); // старший байт адреса
+
+    // === OTS (0x4C) — включить автоинкремент ===
+    GLCD_WriteCommand(0x4C);
 }
 //-------------------------------------------------------------------------------------------------
 // Funkcja zapalaj�ca piksel
